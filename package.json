@@ -1,9 +1,10 @@
 {
   "name": "travelwishlist",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,5 +12,17 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eikemx/Alpha-Male-Magazine-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eikemx/Alpha-Male-Magazine-node/issues"
+  },
+  "homepage": "https://github.com/eikemx/Alpha-Male-Magazine-node#readme",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.18"
   }
 }
