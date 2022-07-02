@@ -5,9 +5,9 @@ const articleRouter = express.Router();
 // GET all articles
 
 articleRouter.get("/articles", (req, res) => {
-  db.query("SELECT * FROM articles;")
+  db.query("SELECT * FROM articles ORDER BY id ASC;")
     .then((data) => res.json(data.rows))
-    .catch((error) => res.sendStatus(500));
+    .catch((error) => res.status(500).send(error.message));
 });
 
 // GET single article and author name
@@ -48,20 +48,20 @@ articleRouter.get("/articles/:id", (req, res) => {
 // CREATE article
 
 articleRouter.post("/articles", (req, res) => {
-  const { title, summary, subtitle, text, publishedDate } = req.body;
+  const { title, summary, subtitle, text, authorId, tags, publishedDate } = req.body;
   const createArticle = {
     text: `INSERT INTO 
             articles
-                (title, summary, subtitle, text, publishedDate)
+                (title, summary, subtitle, text, authorId, tags, publishedDate)
             VALUES  
-            ($1, $2, $3, $4, $5)
+            ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
             `,
-    values: [title, summary, subtitle, text, publishedDate],
+    values: [title, summary, subtitle, text, authorId, tags, publishedDate],
   };
   db.query(createArticle)
     .then((data) => res.json(data.rows))
-    .catch((error) => res.sendStatus(500));
+    .catch((error) => res.status(500).send(error.message));
 });
 
 // UPDATE article
@@ -98,7 +98,7 @@ articleRouter.delete("/articles/:id", (req, res) => {
   };
   db.query(deleteOneArticle)
     .then((data) => res.json(data.rows))
-    .catch((error) => res.sendStatus(500));
+    .catch((error) => res.tatus(500).send(error.message));
 });
 
 module.exports = articleRouter;
