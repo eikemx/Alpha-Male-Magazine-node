@@ -1,6 +1,107 @@
-const express = require('express');
+const express = require("express");
 const db = require("../database/client");
 const articleRouter = express.Router();
+
+// GET all articles
+
+articleRouter.get("/articles", (req, res) => {
+  db.query("SELECT * FROM articles;")
+    .then((data) => res.json(data.rows))
+    .catch((error) => res.sendStatus(500));
+});
+
+// GET single article and author name
+
+articleRouter.get("/articles/:id", (req, res) => {
+  const { id } = req.params;
+  db.query(
+    `
+    SELECT 
+        ar.id AS article_id,
+        ar.title,
+        ar.summary,
+        ar.subtitle,
+        ar.text,
+        ar.image,
+        ar.publishedDate,
+        au.id AS author_id,
+        au.first_name, 
+        au.last_name
+    FROM
+    articles ar
+    LEFT JOIN
+    authors au
+    ON au.id = ar.authorid
+    WHERE ar.id = $1
+    `,
+    [id]
+  )
+    .then((data) => {
+      if (!data.rows.length) {
+        return res.status(404).send("This article does not exist");
+      }
+      res.json(data.rows[0]);
+    })
+    .catch((error) => res.status(500).send(error.message));
+});
+
+// CREATE article
+
+articleRouter.post("/articles", (req, res) => {
+  const { title, summary, subtitle, text, publishedDate } = req.body;
+  const createArticle = {
+    text: `INSERT INTO 
+            articles
+                (title, summary, subtitle, text, publishedDate)
+            VALUES  
+            ($1, $2, $3, $4, $5)
+            RETURNING *
+            `,
+    values: [title, summary, subtitle, text, publishedDate],
+  };
+  db.query(createArticle)
+    .then((data) => res.json(data.rows))
+    .catch((error) => res.sendStatus(500));
+});
+
+// UPDATE article
+
+articleRouter.put("/articles/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, summary, subtitle, text, publishedDate } = req.body;
+  const updateOneArticle = {
+    text: `UPDATE articles
+        SET
+            title = $1,
+            summary = $2,
+            subtitle = $3,
+            text = $4,
+            publishedDate = $5
+            WHERE
+                id = $6
+                RETURNING *
+                `,
+    values: [title, summary, subtitle, text, publishedDate, id],
+  };
+  db.query(updateOneArticle)
+    .then((data) => res.json(data.rows))
+    .catch((error) => res.status(500).send(error.message));
+});
+
+// DELETE one article
+
+articleRouter.delete("/articles/:id", (req, res) => {
+  const { id } = req.params;
+  const deleteOneArticle = {
+    text: `DELETE FROM articles WHERE id = $1 RETURNING *`,
+    values: [id],
+  };
+  db.query(deleteOneArticle)
+    .then((data) => res.json(data.rows))
+    .catch((error) => res.sendStatus(500));
+});
+
+module.exports = articleRouter;
 
 // articleRouter.get("/", (req, res) => {
 //     res.send(blog);
@@ -9,12 +110,6 @@ const articleRouter = express.Router();
 // articleRouter.get("/articles", (req, res) => {
 //     res.send(blog.articles);
 // });
-
-articleRouter.get("/articles", (req, res) => {
-    db.query("SELECT * FROM articles;")
-    .then((data) => res.json(data.rows))
-    .catch((error) => res.sendStatus(500))
-})
 
 // articleRouter.get("/article/:id", (req, res) => {
 
@@ -26,13 +121,6 @@ articleRouter.get("/articles", (req, res) => {
 //         res.status(404).send("The selected article is no longer available!");
 //     }
 // });
-
-articleRouter.get("/articles/:id", (req, res) => {
-    const { id } = req.params;
-    db.query("SELECT * FROM articles WHERE id = $1", [id])
-    .then((data) => res.json(data.rows))
-    .catch((error) => res.sendStatus(500));
-})
 
 // articleRouter.post("/articles", (req, res) => {
 //     // console.log(req.body);
@@ -54,23 +142,6 @@ articleRouter.get("/articles/:id", (req, res) => {
 //     res.status(201).send(newArticle);
 // });
 
-articleRouter.post("/articles", (req, res) => {
-    const { title, summary, subtitle, text, publishedDate } = req.body;
-    const createArticle = {
-        text: `INSERT INTO 
-            articles
-                (title, summary, subtitle, text, publishedDate)
-            VALUES  
-            ($1, $2, $3, $4, $5)
-            RETURNING *
-            `,
-        values: [title, summary, subtitle, text, publishedDate]
-    }
-    db.query(createArticle) 
-    .then((data)=> res.json(data.rows))
-    .catch((error) => res.sendStatus(500));
-});
-
 // articleRouter.delete("/article/:id", (req, res) => {
 
 //     const targetArticle = blog.articles.find(
@@ -87,19 +158,8 @@ articleRouter.post("/articles", (req, res) => {
 //     res.send(targetArticle);
 // });
 
-articleRouter.delete("/articles/:id", (req, res) => {
-    const { id } = req.params;
-    const deleteOneArticle = {
-        text: `DELETE FROM articles WHERE id = $1 RETURNING *`, 
-        values: [id],
-    }
-db.query(deleteOneArticle)
-.then((data) => res.json(data.rows))
-.catch((error) => res.sendStatus(500))
-});
-
 // articleRouter.patch("/article/:id", (req, res) => {
-    
+
 //     const targetArticle = blog.articles.find(
 //         (article) => article.id === Number(req.params.id)
 //     );
@@ -112,27 +172,3 @@ db.query(deleteOneArticle)
 
 //     res.send(targetArticle);
 // });
-
-articleRouter.put("/articles/:id", (req, res) => {
-    const { id } = req.params;
-    const {  title, summary, subtitle, text, publishedDate } = req.body;
-    const updateOneArticle = {
-        text: `UPDATE articles
-        SET
-            title = $1,
-            summary = $2,
-            subtitle = $3,
-            text = $4,
-            publishedDate = $5
-            WHERE
-                id = $6
-                RETURNING *
-                `,
-            values: [ title, summary, subtitle, text, publishedDate, id ],
-    };
-    db.query(updateOneArticle)
-    .then((data) => res.json(data.rows))
-    .catch((error) => res.status(500).send(error.message))
-});
-
-module.exports = articleRouter;
