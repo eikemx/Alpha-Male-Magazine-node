@@ -20,6 +20,7 @@ app.get("*", (req, res) => {
 
 
 const port = process.env.PORT || 3013;
+app.set('port', port);
 
 app.listen(port, () => {
     console.log(`App is listening to Port ${port}`)

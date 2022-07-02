@@ -5,7 +5,7 @@ const authorRouter = express.Router();
 // GET all authors
 
 authorRouter.get("/authors", (req,res) => {
-    db.query(`SELECT * FROM authors;`)
+    db.query(`SELECT * FROM authors ORDER BY id ASC;`)
     .then((data) => res.json(data.rows))
     .catch((error) => res.status(500).send(error.message))
 })
