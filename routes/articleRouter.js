@@ -48,16 +48,16 @@ articleRouter.get("/articles/:id", (req, res) => {
 // CREATE article
 
 articleRouter.post("/articles", (req, res) => {
-  const { title, summary, subtitle, text, authorId, tags, publishedDate } = req.body;
+  const { title, summary, subtitle, text, image, authorId, publishedDate } = req.body;
   const createArticle = {
     text: `INSERT INTO 
             articles
-                (title, summary, subtitle, text, authorId, tags, publishedDate)
+                (title, summary, subtitle, text, image, authorId, publishedDate)
             VALUES  
             ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
             `,
-    values: [title, summary, subtitle, text, authorId, tags, publishedDate],
+    values: [title, summary, subtitle, text, image, authorId, publishedDate],
   };
   db.query(createArticle)
     .then((data) => res.json(data.rows))

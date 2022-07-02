@@ -8,6 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors()); // set up a CORS policy
+app.use(express.static("public"));
 app.use("/api/alpha", authorRouter, articleRouter, tagRouter);
 
 app.get("/", (req, res) => {
