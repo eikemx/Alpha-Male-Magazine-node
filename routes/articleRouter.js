@@ -1,54 +1,79 @@
 const express = require("express");
 const db = require("../database/client");
+const blog = require("../data/blogData.js");
 const articleRouter = express.Router();
 
 // GET all articles
 
-articleRouter.get("/articles", (req, res) => {
-  db.query("SELECT * FROM articles ORDER BY id ASC;")
-    .then((data) => res.json(data.rows))
-    .catch((error) => res.status(500).send(error.message));
+articleRouter.get("/articles", async (req, res) => {
+  try {
+    const dbResult = await db.query("SELECT * FROM articles ORDER BY id ASC;");
+
+    if (dbResult.rows.length === 0) {
+      return res.json(blog.articles);
+    }
+
+    return res.json(dbResult.rows);
+  } catch (error) {
+    console.error("Database error:", error);
+    return res.json(blog.articles);
+  }
 });
 
 // GET single article and author name
 
-articleRouter.get("/articles/:id", (req, res) => {
+articleRouter.get("/articles/:id", async (req, res) => {
   const { id } = req.params;
-  db.query(
-    `
-    SELECT 
-        ar.id AS article_id,
-        ar.title,
-        ar.summary,
-        ar.subtitle,
-        ar.text,
-        ar.image,
-        ar.publishedDate,
-        au.id AS author_id,
-        au.first_name, 
-        au.last_name
-    FROM
-    articles ar
-    LEFT JOIN
-    authors au
-    ON au.id = ar.authorid
-    WHERE ar.id = $1
-    `,
-    [id]
-  )
-    .then((data) => {
-      if (!data.rows.length) {
-        return res.status(404).send("This article does not exist");
+  try {
+    const dbResult = await db.query(
+      `SELECT 
+          ar.id AS article_id,
+          ar.title,
+          ar.summary,
+          ar.subtitle,
+          ar.text,
+          ar.image,
+          ar.publishedDate,
+          au.id AS author_id,
+          au.first_name, 
+          au.last_name
+      FROM
+      articles ar
+      LEFT JOIN
+      authors au
+      ON au.id = ar.authorid
+      WHERE ar.id = $1`,
+      [id]
+    );
+
+    if (!dbResult.rows.length) {
+      const staticArticle = blog.articles.find(
+        (article) => article.id === Number(id)
+      );
+      if (staticArticle) {
+        return res.json(staticArticle);
       }
-      res.json(data.rows[0]);
-    })
-    .catch((error) => res.status(500).send(error.message));
+      return res.status(404).send("This article does not exist");
+    }
+
+    res.json(dbResult.rows[0]);
+  } catch (error) {
+    console.error("Database error:", error);
+    const staticArticle = blog.articles.find(
+      (article) => article.id === Number(id)
+    );
+    if (staticArticle) {
+      return res.json(staticArticle);
+    }
+    return res.status(500).send(error.message);
+  }
 });
 
 // CREATE article
 
 articleRouter.post("/articles", (req, res) => {
-  const { title, summary, subtitle, text, image, authorId, publishedDate } = req.body;
+  const { title, summary, subtitle, text, image, authorId, publishedDate } =
+    req.body;
   const createArticle = {
     text: `INSERT INTO 
             articles

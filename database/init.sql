@@ -7,7 +7,7 @@ birth_date DATE,
 bio VARCHAR,
 long FLOAT,
 lat FLOAT
-)
+);
 
 CREATE TABLE articles (
 id SERIAL PRIMARY KEY,
