@@ -71,12 +71,12 @@ Alpha Male Magazine Backend API serves as the data management system for the Alp
 ## Running the Application
 
 Development mode (with auto-reload):
-    ```bash
+    ```
     npm run dev
     ```
 
 Production mode:
-    ```bash
+    ```
     npm start
     ```
 
