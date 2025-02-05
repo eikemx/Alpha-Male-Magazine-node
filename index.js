@@ -6,26 +6,15 @@ const tagRouter = require("./routes/tagRouter");
 require("dotenv").config();
 const app = express();
 
-const allowedOrigins = [
-  "https://alpha-male-mag.netlify.app/",
-  "http://localhost:3000",
-  "http://localhost:5173", // Adding Vite's default port just in case
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200,
-};
-
-// Apply CORS with options - only once!
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: ["https://alpha-male-mag.netlify.app", "http://localhost:3000"], // Your frontend domain
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+    credentials: true, // Allow credentials (cookies, authorization headers)
+    optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
+);
 
 // Middleware
 app.use(express.json());
