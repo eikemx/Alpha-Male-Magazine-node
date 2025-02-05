@@ -7,7 +7,7 @@ require("dotenv").config();
 const app = express();
 
 const allowedOrigins = [
-  "https://alpha-male-mag.netlify.app",
+  "https://alpha-male-mag.netlify.app/",
   "http://localhost:3000",
   "http://localhost:5173", // Adding Vite's default port just in case
 ];
