@@ -36,7 +36,6 @@ Alpha Male Magazine Backend API serves as the data management system for the Alp
 1. Clone the repository:
     ```bash
     git clone https://github.com/eikemx/Alpha-Male-Magazine-node-BE.git
-    cd Alpha-Male-Magazine-node-BE
     ```
 
 2. Install dependencies:
@@ -87,18 +86,18 @@ The server will start on port 3013 (or the port specified in your environment va
 ```bash
 alpha-male-magazine-backend/
 ├── data/
-│ └── blogData.js # Static data for fallback
+│ └── blogData.js
 ├── database/
-│ ├── client.js # Database connection
-│ └── init.sql # Database initialization
-├── public/ # Images
+│ ├── client.js
+│ └── init.sql
+├── public/
 ├── routes/
-│ ├── articleRouter.js # Article routes
-│ ├── authorRouter.js # Author routes
-│ └── tagRouter.js # Tag routes
-├── .env # Environment variables
-├── index.js # Application entry point
-└── package.json # Project dependencies
+│ ├── articleRouter.js
+│ ├── authorRouter.js
+│ └── tagRouter.js
+├── .env
+├── index.js
+└── package.json
 ```
 
 ## API Endpoints in Detail
@@ -144,7 +143,6 @@ alpha-male-magazine-backend/
 ## Scripts
 - `npm run dev`: Starts development server with nodemon
 - `npm start`: Starts production server
-- `npm test`: Runs test suite
 
 ## Database Schema
 Detailed database structure including tables for:
