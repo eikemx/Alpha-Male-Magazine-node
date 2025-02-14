@@ -86,18 +86,10 @@ The server will start on port 3013 (or the port specified in your environment va
 ```bash
 alpha-male-magazine-backend/
 ├── data/
-│ └── blogData.js
 ├── database/
-│ ├── client.js
-│ └── init.sql
 ├── public/
 ├── routes/
-│ ├── articleRouter.js
-│ ├── authorRouter.js
-│ └── tagRouter.js
-├── .env
-├── index.js
-└── package.json
+└── README.md
 ```
 
 ## API Endpoints in Detail
